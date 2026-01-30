@@ -1,4 +1,4 @@
-import { app } from "@/src/server/api";
+import { app } from "@/server/api";
 
 
 export const GET = app.handle
