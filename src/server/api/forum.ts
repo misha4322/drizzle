@@ -4,13 +4,14 @@ import { categories, tags, posts } from "../db/schema";
 import { eq, asc } from "drizzle-orm";
 
 export const forumRouter = new Elysia({ prefix: "/forum" })
+
   .get("/categories", async () => {
     return await db.query.categories.findMany({
       orderBy: [asc(categories.title)],
     });
   })
 
-  .get("/categories/:slug", async ({ params, error }) => {
+  .get("/categories/:slug", async ({ params }) => {
     const result = await db.query.categories.findFirst({
       where: eq(categories.slug, params.slug),
       with: {
@@ -23,16 +24,9 @@ export const forumRouter = new Elysia({ prefix: "/forum" })
       },
     });
 
-    if (!result) {
-      return error(404, {
-        success: false,
-        message: "Category not found",
-      });
-    }
 
-    return result;
+    return result ?? null;
   })
-
 
   .post(
     "/categories",
@@ -45,6 +39,7 @@ export const forumRouter = new Elysia({ prefix: "/forum" })
           description: body.description,
         })
         .returning();
+      
       return inserted[0];
     },
     {
@@ -56,12 +51,10 @@ export const forumRouter = new Elysia({ prefix: "/forum" })
     }
   )
 
-  // 4. Получение всех тегов
   .get("/tags", async () => {
     return await db.select().from(tags);
   })
 
-  // 5. Создание тега
   .post(
     "/tags",
     async ({ body }) => {
@@ -71,6 +64,7 @@ export const forumRouter = new Elysia({ prefix: "/forum" })
           name: body.name,
         })
         .returning();
+      
       return inserted[0];
     },
     {

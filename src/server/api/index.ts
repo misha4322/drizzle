@@ -9,6 +9,5 @@ export const app = new Elysia({ prefix: "/api" })
     .use(commentsRouter)
     .use(likesRouter)
     .use(forumRouter)
-    .listen(3000);
 
 export type App = typeof app;
