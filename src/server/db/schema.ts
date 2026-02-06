@@ -12,13 +12,38 @@ import { relations } from "drizzle-orm";
 
 export const users = pgTable("users", {
   id: uuid("id").defaultRandom().primaryKey(),
-  username: varchar("username", { length: 32 }).notNull().unique(),
-  email: varchar("email", { length: 255 }).notNull().unique(),
-  passwordHash: varchar("password_hash", { length: 255 }).notNull(),
-  role: varchar("role", { length: 20 }).default("user"),
+
+  username: varchar("username", { length: 32 })
+    .notNull()
+    .unique(),
+
+  email: varchar("email", { length: 255 })
+    .notNull()
+    .unique(),
+
+ 
+  passwordHash: varchar("password_hash", { length: 255 }),
+
+
+  provider: varchar("provider", { length: 20 })
+    .notNull()
+    .default("local"),
+
+  providerId: varchar("provider_id", { length: 255 }),
+
+  role: varchar("role", { length: 20 })
+    .notNull()
+    .default("user"),
+
   avatarUrl: text("avatar_url"),
-  isBanned: boolean("is_banned").default(false),
-  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow(),
+
+  isBanned: boolean("is_banned")
+    .notNull()
+    .default(false),
+
+  createdAt: timestamp("created_at", { withTimezone: true })
+    .notNull()
+    .defaultNow(),
 });
 
 export const categories = pgTable("categories", {
