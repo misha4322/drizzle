@@ -1,3 +1,4 @@
+// components/SocialButtons.tsx
 "use client";
 
 import { signIn } from "next-auth/react";
@@ -24,7 +25,7 @@ export default function SocialButtons({ isLogin = true }) {
             height={24}
           />
         </div>
-        <span>Войти через Google</span>
+        <span>{isLogin ? "Войти" : "Зарегистрироваться"} через Google</span>
       </button>
 
       <button
@@ -40,7 +41,23 @@ export default function SocialButtons({ isLogin = true }) {
             height={24}
           />
         </div>
-        <span>Войти через Яндекс</span>
+        <span>{isLogin ? "Войти" : "Зарегистрироваться"} через Яндекс</span>
+      </button>
+
+      <button
+        type="button"
+        onClick={() => handleSocialLogin("steam")}
+        className="social-btn social-steam"
+      >
+        <div className="social-icon">
+          <Image
+            src="/steam.png"
+            alt="Войти через Steam"
+            width={24}
+            height={24}
+          />
+        </div>
+        <span>{isLogin ? "Войти" : "Зарегистрироваться"} через Steam</span>
       </button>
     </div>
   );

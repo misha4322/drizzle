@@ -7,44 +7,52 @@ import {
   boolean,
   integer,
   primaryKey,
+  uniqueIndex, 
 } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
 
-export const users = pgTable("users", {
-  id: uuid("id").defaultRandom().primaryKey(),
+export const users = pgTable(
+  "users",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
 
-  username: varchar("username", { length: 32 })
-    .notNull()
-    .unique(),
+    username: varchar("username", { length: 32 })
+      .notNull()
+      .unique(),
 
-  email: varchar("email", { length: 255 })
-    .notNull()
-    .unique(),
+    // ✅ Steam не даёт email => email nullable
+    email: varchar("email", { length: 255 }).unique(),
 
- 
-  passwordHash: varchar("password_hash", { length: 255 }),
+    passwordHash: varchar("password_hash", { length: 255 }),
 
+    provider: varchar("provider", { length: 20 })
+      .notNull()
+      .default("local"),
 
-  provider: varchar("provider", { length: 20 })
-    .notNull()
-    .default("local"),
+    providerId: varchar("provider_id", { length: 255 }),
 
-  providerId: varchar("provider_id", { length: 255 }),
+    role: varchar("role", { length: 20 })
+      .notNull()
+      .default("user"),
 
-  role: varchar("role", { length: 20 })
-    .notNull()
-    .default("user"),
+    avatarUrl: text("avatar_url"),
 
-  avatarUrl: text("avatar_url"),
+    isBanned: boolean("is_banned")
+      .notNull()
+      .default(false),
 
-  isBanned: boolean("is_banned")
-    .notNull()
-    .default(false),
-
-  createdAt: timestamp("created_at", { withTimezone: true })
-    .notNull()
-    .defaultNow(),
-});
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .notNull()
+      .defaultNow(),
+  },
+  (t) => ({
+    // ✅ Чтобы Steam/OAuth не создавали дубликаты
+    providerProviderIdUnique: uniqueIndex("users_provider_providerid_unique").on(
+      t.provider,
+      t.providerId
+    ),
+  })
+);
 
 export const categories = pgTable("categories", {
   id: uuid("id").defaultRandom().primaryKey(),

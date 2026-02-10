@@ -15,6 +15,13 @@
       "when": 1770310116023,
       "tag": "0001_aromatic_tyger_tiger",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1770746235565,
+      "tag": "0002_tiny_nightmare",
+      "breakpoints": true
     }
   ]
 }

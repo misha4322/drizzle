@@ -1,3 +1,5 @@
+/* SocialButtons.css */
+
 .social-buttons {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -51,15 +53,44 @@
   border-color: rgba(255, 204, 0, 0.3);
 }
 
+/* Кнопка Steam */
+.social-steam {
+  background: linear-gradient(135deg, #1b2838 0%, #2a475e 100%);
+  grid-column: span 2;
+}
+
+.social-steam:hover {
+  background: linear-gradient(135deg, #2a475e 0%, #1b2838 100%);
+  border-color: rgba(27, 40, 56, 0.3);
+}
+
 .social-icon {
   width: 24px;
   height: 24px;
   object-fit: contain;
   filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.2));
 }
+.social-error {
+  margin-bottom: 12px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: rgba(255, 0, 0, 0.15);
+  border: 1px solid rgba(255, 0, 0, 0.35);
+  color: #ffd6d6;
+  font-size: 14px;
+}
+
+/* Для Yandex иконки убираем фильтр чтобы был желтым */
+.social-yandex .social-icon {
+  filter: none;
+}
 
 @media (max-width: 480px) {
   .social-buttons {
     grid-template-columns: 1fr;
+  }
+  
+  .social-steam {
+    grid-column: span 1;
   }
 }
