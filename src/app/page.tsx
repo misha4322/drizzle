@@ -1,153 +1,75 @@
 import Link from "next/link";
 import Image from "next/image";
+import { headers } from "next/headers";
 import "./Home.css";
 
-export default function Home() {
-    return (
-        <div className="main-container">
-            <div className="main-background">
-                <div className="glow-effect glow-1"></div>
-                <div className="glow-effect glow-2"></div>
-                <div className="glow-effect glow-3"></div>
-            </div>
+type PostCard = {
+  id: string;
+  slug: string;
+  title: string;
+  content: string;
+  createdAt: string;
+  author: { username: string; avatarUrl: string | null };
+  category: { title: string } | null;
+  tags: { id: string; name: string }[];
+};
 
-            <div className="nav-container">
-                <nav className="nav-content">
-                    <div className="logo-wrapper">
-                        <div className="logo-icon">
-                            <Image
-                                src="/fox.png"
-                                alt="GameHub Logo"
-                                width={24}
-                                height={24}
-                                className="logo-image"
-                            />
-                        </div>
-                        <span className="logo-text">GameHub</span>
-                    </div>
+async function getBaseUrl() {
+  const h = await headers(); // ✅ ВАЖНО: await
+  const host = h.get("host") ?? "localhost:3000";
+  const proto =
+    h.get("x-forwarded-proto") ??
+    (process.env.NODE_ENV === "development" ? "http" : "https");
 
-                    <div className="nav-links">
-                        <Link
-                            href="/auth/login"
-                            className="nav-btn nav-login"
-                        >
-                            Вход
-                        </Link>
-                        <Link
-                            href="/auth/register"
-                            className="nav-btn nav-register"
-                        >
-                            Регистрация
-                        </Link>
-                    </div>
-                </nav>
-            </div>
+  return `${proto}://${host}`;
+}
 
-            <main className="main-content">
-                <section className="hero-section">
-                    <div className="hero-text">
-                        <h1 className="hero-title">
-                            <span className="title-main">GameHub</span>
-                            <span className="title-gradient">Игровой портал нового поколения</span>
-                        </h1>
+async function getPosts(): Promise<PostCard[]> {
+  const base = await getBaseUrl();
+  const res = await fetch(`${base}/api/posts`, { cache: "no-store" });
+  if (!res.ok) return [];
+  const data = await res.json();
+  return (data.posts ?? []) as PostCard[];
+}
 
-                        <p className="hero-description">
-                            Крупнейшая платформа для геймеров: обзоры, стримы, новости и сообщество.
-                            Ваш главный источник всего, что связано с играми.
-                        </p>
+export default async function Home() {
+  const posts = await getPosts();
+  const latest = posts.slice(0, 6);
 
-                        <div className="stats-container">
-                            <div className="stat-card">
-                                <div className="stat-icon">🎮</div>
-                                <div className="stat-content">
-                                    <div className="stat-number">10K+</div>
-                                    <div className="stat-label">Игр в каталоге</div>
-                                </div>
-                            </div>
+  return (
+    <div className="main-container">
+      {/* …твой текущий JSX… */}
 
-                            <div className="stat-card">
-                                <div className="stat-icon">👥</div>
-                                <div className="stat-content">
-                                    <div className="stat-number">500K+</div>
-                                    <div className="stat-label">Геймеров</div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div className="hero-panel">
-                        <div className="panel-container">
-                            <div className="panel-badge">
-                                <Image
-                                    src="/fox.png"
-                                    alt="GameHub Logo"
-                                    width={32}
-                                    height={32}
-                                />
-                            </div>
-
-                            <div className="panel-header">
-                                <h3 className="panel-title">Присоединяйтесь к GameHub</h3>
-                                <p className="panel-subtitle">
-                                    Станьте частью крупнейшего игрового сообщества
-                                </p>
-                            </div>
-
-                            <div className="auth-options">
-                                <Link
-                                    href="/auth/login"
-                                    className="auth-option auth-login"
-                                >
-                                    <div className="option-title">Вход</div>
-                                    <div className="option-subtitle">В аккаунт</div>
-                                </Link>
-
-                                <Link
-                                    href="/auth/register"
-                                    className="auth-option auth-register"
-                                >
-                                    <div className="option-title">Регистрация</div>
-                                    <div className="option-subtitle">Создать аккаунт</div>
-                                </Link>
-                            </div>
-
-                            <div className="social-divider">
-                                Или используйте социальные сети
-                            </div>
-                        </div>
-                    </div>
-                </section>
-
-                <section className="features-section">
-                    <h2 className="features-title">Почему выбирают GameHub?</h2>
-                    
-                    <div className="features-grid">
-                        {[
-                            { 
-                                category: "Игровые обзоры", 
-                                title: "Экспертные обзоры", 
-                                desc: "Подробные анализы игр от профессиональных геймеров и критиков" 
-                            },
-                            { 
-                                category: "Статистика", 
-                                title: "Точная статистика", 
-                                desc: "Отслеживайте свои достижения, время в играх и прогресс" 
-                            },
-                            { 
-                                category: "Сообщество", 
-                                title: "Активное сообщество", 
-                                desc: "Общайтесь, делитесь скриншотами и находите команду для игр" 
-                            }
-                        ].map((feature, i) => (
-                            <div key={i} className="feature-card">
-                                <div className="feature-category">{feature.category}</div>
-                                <h4 className="feature-name">{feature.title}</h4>
-                                <p className="feature-desc">{feature.desc}</p>
-                            </div>
-                        ))}
-                    </div>
-                </section>
-            </main>
+      {/* Пример: секция последних постов */}
+      <section className="latest-posts-section">
+        <div className="latest-posts-header">
+          <h2 className="features-title">Последние посты</h2>
+          <Link className="latest-posts-link" href="/posts">
+            Все посты →
+          </Link>
         </div>
-    );
+
+        {latest.length === 0 ? (
+          <div className="latest-posts-empty">
+            Пока нет постов. <Link href="/posts/new">Создать первый</Link>
+          </div>
+        ) : (
+          <div className="latest-posts-grid">
+            {latest.map((p) => (
+              <Link key={p.id} href={`/posts/${p.slug}`} className="post-card">
+                <div className="post-title">{p.title}</div>
+                <div className="post-meta">
+                  {p.author.username}
+                  {p.category ? ` • ${p.category.title}` : ""}
+                </div>
+                <div className="post-excerpt">
+                  {p.content.length > 160 ? p.content.slice(0, 160) + "…" : p.content}
+                </div>
+              </Link>
+            ))}
+          </div>
+        )}
+      </section>
+    </div>
+  );
 }

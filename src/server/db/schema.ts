@@ -102,6 +102,31 @@ export const postLikes = pgTable("post_likes", {
   createdAt: timestamp("created_at", { withTimezone: true }).defaultNow(),
 });
 
+export const commentLikes = pgTable(
+  "comment_likes",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+
+    commentId: uuid("comment_id")
+      .references(() => comments.id, { onDelete: "cascade" })
+      .notNull(),
+
+    userId: uuid("user_id")
+      .references(() => users.id, { onDelete: "cascade" })
+      .notNull(),
+
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .notNull()
+      .defaultNow(),
+  },
+  (t) => ({
+    commentUserUnique: uniqueIndex("comment_likes_comment_user_unique").on(
+      t.commentId,
+      t.userId
+    ),
+  })
+);
+
 export const tags = pgTable("tags", {
   id: uuid("id").defaultRandom().primaryKey(),
   name: varchar("name", { length: 50 }).notNull().unique(),
@@ -138,13 +163,18 @@ export const postsRelations = relations(posts, ({ one, many }) => ({
 export const commentsRelations = relations(comments, ({ one, many }) => ({
   post: one(posts, { fields: [comments.postId], references: [posts.id] }),
   author: one(users, { fields: [comments.authorId], references: [users.id] }),
-  parent: one(comments, { fields: [comments.parentId], references: [comments.id], relationName: "replies" }),
+  parent: one(comments, {
+    fields: [comments.parentId],
+    references: [comments.id],
+    relationName: "replies",
+  }),
   replies: many(comments, { relationName: "replies" }),
+  likes: many(commentLikes),
 }));
 
-export const postLikesRelations = relations(postLikes, ({ one }) => ({
-  post: one(posts, { fields: [postLikes.postId], references: [posts.id] }),
-  user: one(users, { fields: [postLikes.userId], references: [users.id] }),
+export const commentLikesRelations = relations(commentLikes, ({ one }) => ({
+  comment: one(comments, { fields: [commentLikes.commentId], references: [comments.id] }),
+  user: one(users, { fields: [commentLikes.userId], references: [users.id] }),
 }));
 
 export const tagsRelations = relations(tags, ({ many }) => ({
